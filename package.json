@@ -1,0 +1,33 @@
+{
+  "name": "jose-josenildo-portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/image": "^1.1.0",
+    "@nuxtjs/supabase": "^1.1.4",
+    "@nuxtjs/tailwindcss": "^6.10.1",
+    "@tresjs/cientos": "^5.1.1",
+    "@tresjs/nuxt": "^5.1.1",
+    "gsap": "^3.13.0",
+    "nuxt": "^3.8.2",
+    "sass": "^1.69.5",
+    "three": "^0.181.2",
+    "vue": "^3.3.10",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@types/three": "^0.160.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3"
+  }
+}
