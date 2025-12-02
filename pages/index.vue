@@ -80,32 +80,41 @@ onMounted(() => {
       <div class="absolute inset-0 z-0 opacity-5 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:100px_100px]"></div>
 
       <!-- Radar Scope Profile (Bridge Instrumentation Style) -->
-      <div class="radar-scope relative w-72 h-72 mb-12 rounded-full border-4 border-navy-800 bg-navy-900/80 backdrop-blur-sm flex items-center justify-center group shadow-2xl">
-        <!-- Compass Rose / Degree Markings -->
-        <div class="absolute inset-0 rounded-full border border-white/10"></div>
-        <div class="absolute inset-2 rounded-full border-2 border-dashed border-orange/30 animate-spin-slow"></div>
-        <div class="absolute -inset-4 border border-cyan/20 rounded-full opacity-50"></div>
+      <!-- Radar Scope Profile (Industrial Port Style) -->
+      <div class="radar-scope relative w-[22rem] h-[22rem] mb-12 flex items-center justify-center group">
         
-        <!-- Cardinal Points -->
-        <div class="absolute top-2 text-xs font-mono text-orange font-bold">N</div>
-        <div class="absolute bottom-2 text-xs font-mono text-orange font-bold">S</div>
-        <div class="absolute left-2 text-xs font-mono text-orange font-bold">W</div>
-        <div class="absolute right-2 text-xs font-mono text-orange font-bold">E</div>
+        <!-- Outer Mechanical Ring (Gear effect) -->
+        <div class="absolute -inset-6 rounded-full border-4 border-dashed border-slate-600/30 animate-spin-reverse-slow pointer-events-none"></div>
+        <div class="absolute -inset-2 rounded-full border border-orange/20 pointer-events-none"></div>
 
-        <!-- Scanner Line -->
-        <div class="absolute inset-0 rounded-full border-t-2 border-cyan/50 shadow-[0_0_15px_#64ffda] animate-spin-slow opacity-30"></div>
-        
-        <NuxtImg 
-          :src="displayProfile.avatar_url || '/images/profile-placeholder.png'" 
-          alt="José Josenildo"
-          class="relative w-64 h-64 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 z-10 border-2 border-white/5"
-          :style="{ transform: `rotate(${displayProfile.avatar_rotation || 0}deg)` }"
-          placeholder
-        />
+        <!-- Main Container -->
+        <div class="relative w-full h-full rounded-full border-4 border-navy-800 bg-navy-900/80 backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden">
+          
+          <!-- Compass Rose / Degree Markings -->
+          <div class="absolute inset-0 rounded-full border border-white/10 z-20 pointer-events-none"></div>
+          <div class="absolute inset-2 rounded-full border-4 border-dashed border-orange/70 animate-spin-slow z-20 pointer-events-none"></div>
+          
+          <!-- Cardinal Points (High Visibility) -->
+          <div class="absolute top-4 left-1/2 -translate-x-1/2 z-30 text-sm font-mono text-orange font-bold bg-navy-950/80 px-2 py-0.5 rounded border border-orange/30 shadow-lg">N</div>
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 text-sm font-mono text-orange font-bold bg-navy-950/80 px-2 py-0.5 rounded border border-orange/30 shadow-lg">S</div>
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 z-30 text-sm font-mono text-orange font-bold bg-navy-950/80 px-2 py-0.5 rounded border border-orange/30 shadow-lg">O</div>
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 z-30 text-sm font-mono text-orange font-bold bg-navy-950/80 px-2 py-0.5 rounded border border-orange/30 shadow-lg">L</div>
+
+          <!-- Scanner Line -->
+          <div class="absolute inset-0 rounded-full border-t-4 border-cyan/80 shadow-[0_0_35px_#64ffda] animate-spin-slow opacity-90 z-20 pointer-events-none"></div>
+          
+          <NuxtImg 
+            :src="displayProfile.avatar_url || '/images/profile-placeholder.png'" 
+            alt="José Josenildo"
+            class="relative w-80 h-80 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 z-10 border-2 border-white/10"
+            :style="{ transform: `rotate(${displayProfile.avatar_rotation || 0}deg)` }"
+            placeholder
+          />
+        </div>
       </div>
       
       <div class="text-center z-10 max-w-5xl">
-        <h1 class="hero-text text-6xl md:text-8xl lg:text-9xl font-display font-bold text-white mb-8 tracking-tighter uppercase leading-none drop-shadow-2xl">
+        <h1 class="hero-text text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white mb-8 tracking-tighter uppercase leading-none drop-shadow-2xl">
           {{ displayProfile.full_name }}
         </h1>
         
