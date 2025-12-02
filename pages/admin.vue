@@ -145,7 +145,8 @@ const deleteAlbum = async (id: number) => {
 }
 
 // Vessel (Photo) Actions
-const newVessel = ref({ vessel_name: '', description: '', album_id: '', image_url: '' })
+const newVessel = ref({ id: null, vessel_name: '', description: '', album_id: '', image_url: '' })
+const isEditingVessel = ref(false)
 
 const uploadVesselImage = async (event: any) => {
   const file = event.target.files[0]
@@ -177,18 +178,39 @@ const uploadVesselImage = async (event: any) => {
 
 const addVessel = async () => {
   loading.value = true
-  const { error } = await supabase.from('vessels_gallery').insert(newVessel.value as any)
   
-  if (error) message.value = 'Erro ao adicionar foto'
+  const payload = { ...newVessel.value }
+  if (!payload.id) delete (payload as any).id
+  // Remove joined data that shouldn't be sent back
+  delete (payload as any).albums
+
+  const { error } = await supabase.from('vessels_gallery').upsert(payload as any)
+  
+  if (error) {
+    console.error('Erro detalhado ao salvar foto:', error)
+    message.value = `Erro ao salvar foto: ${error.message} (${error.details || ''})`
+  }
   else {
-    message.value = 'Foto adicionada!'
-    // Keep album_id filled
-    newVessel.value = { ...newVessel.value, vessel_name: '', description: '', image_url: '' }
+    message.value = isEditingVessel.value ? 'Foto atualizada!' : 'Foto adicionada!'
+    cancelEditVessel()
     fetchData()
   }
   
   setTimeout(() => message.value = '', 3000)
   loading.value = false
+}
+
+const editVessel = (item: any) => {
+  newVessel.value = { ...item }
+  isEditingVessel.value = true
+  // Scroll to form
+  const formElement = document.getElementById('vessel-form')
+  if (formElement) formElement.scrollIntoView({ behavior: 'smooth' })
+}
+
+const cancelEditVessel = () => {
+  newVessel.value = { id: null, vessel_name: '', description: '', album_id: '', image_url: '' }
+  isEditingVessel.value = false
 }
 
 const deleteVessel = async (id: number) => {
@@ -297,12 +319,12 @@ const deleteExperience = async (id: number) => {
       <!-- Tabs -->
       <div class="flex gap-4 mb-8 border-b border-navy-700 pb-4 overflow-x-auto">
         <button 
-          v-for="tab in ['profile', 'gallery', 'experience']" 
-          :key="tab"
-          @click="activeTab = tab"
-          :class="['px-4 py-2 rounded-lg capitalize whitespace-nowrap transition-colors', activeTab === tab ? 'bg-orange text-white font-bold' : 'text-gray-400 hover:text-white bg-navy-800']"
+          v-for="tab in [{key: 'profile', label: 'Perfil'}, {key: 'gallery', label: 'Galeria'}, {key: 'experience', label: 'Experiência'}]" 
+          :key="tab.key"
+          @click="activeTab = tab.key"
+          :class="['px-4 py-2 rounded-lg capitalize whitespace-nowrap transition-colors', activeTab === tab.key ? 'bg-orange text-white font-bold' : 'text-gray-400 hover:text-white bg-navy-800']"
         >
-          {{ tab }}
+          {{ tab.label }}
         </button>
       </div>
 
@@ -408,8 +430,11 @@ const deleteExperience = async (id: number) => {
           <h3 class="text-xl font-bold text-cyan mb-4">2. Fotos da Galeria</h3>
           
           <!-- Add Photo -->
-          <div class="bg-navy-800 p-6 rounded-xl mb-8 border border-navy-700">
-            <h4 class="text-lg font-bold mb-4">Adicionar Foto</h4>
+          <div id="vessel-form" class="bg-navy-800 p-6 rounded-xl mb-8 border border-navy-700">
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="text-lg font-bold">{{ isEditingVessel ? 'Editar Foto' : 'Adicionar Foto' }}</h4>
+              <button v-if="isEditingVessel" @click="cancelEditVessel" class="text-sm text-gray-400 hover:text-white">Cancelar Edição</button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div class="md:col-span-2">
                 <label class="block text-sm text-gray-400 mb-1">Selecione o Álbum</label>
@@ -426,7 +451,7 @@ const deleteExperience = async (id: number) => {
               </div>
               <textarea v-model="newVessel.description" placeholder="Descrição da Foto" class="p-3 bg-navy-900 border border-navy-600 rounded-lg md:col-span-2"></textarea>
             </div>
-            <button @click="addVessel" class="px-6 py-2 bg-cyan text-navy-900 font-bold rounded-lg hover:bg-cyan/80">Adicionar Foto</button>
+            <button @click="addVessel" class="px-6 py-2 bg-cyan text-navy-900 font-bold rounded-lg hover:bg-cyan/80">{{ isEditingVessel ? 'Atualizar Foto' : 'Adicionar Foto' }}</button>
           </div>
 
           <!-- List Photos -->
@@ -434,8 +459,11 @@ const deleteExperience = async (id: number) => {
             <div v-for="item in vessels" :key="item.id" class="bg-navy-800 rounded-xl overflow-hidden border border-navy-700 group">
               <div class="aspect-video bg-navy-900 relative">
                 <img :src="item.image_url" class="w-full h-full object-cover" />
-                <button @click="deleteVessel(item.id)" class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <button @click="deleteVessel(item.id)" class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" title="Excluir">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <button @click="editVessel(item)" class="absolute top-2 right-12 bg-cyan text-navy-900 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" title="Editar">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
               </div>
               <div class="p-4">
