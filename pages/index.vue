@@ -131,7 +131,6 @@ onMounted(() => {
 
       <!-- Scroll Indicator -->
       <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-70 animate-pulse">
-        <span class="text-xs font-mono text-orange tracking-widest">NAVEGAR</span>
         <div class="w-[1px] h-16 bg-gradient-to-b from-orange to-transparent"></div>
       </div>
     </header>
